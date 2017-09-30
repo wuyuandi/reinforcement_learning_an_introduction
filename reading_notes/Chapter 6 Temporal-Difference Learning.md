@@ -168,6 +168,100 @@ $V(A)$和$V(B)$的值最有可能是多少？在8个片段中 ，有6个片段�
 
 ## Sarsa: On-policy TD Control
 
+与以前一样，TD(0)算法的控制也遵循一般策略迭代(generalized policy iteration)。现在我们来讨论同策略的TD控制过程。
+
+第一步，我们需要学习行为值函数。实际上，对于同策略方法，我们必须在策略$\pi$下，对所有的状态$s$和行为$a$求出估计值$q_{\pi}(s,a)$。回忆一下，一个片段是由一个个状态行为对组成的。它的示意图如下：
+
+![1506752334076](images/1506752334076.png)
+
+它的更新方式为:
+
+$$Q_{t}(S_t, A_t) \gets Q_{t}(S_t, A_t) + \alpha [R_{t +1} + \gamma Q_{t}(S_{t+1}, A_{t+1}) - Q_{t}(S_t, A_t)]  \tag{6.7}$$
+
+这个公式使用一个五元组$(S_t,A_t,R_{t+1},S_{t+1},A_{t+1})$构成一个转换过程，这就是Sarsa算法。状态转换图如下所示：
+
+![1506753506498](images/1506753506498.png)
+
+### Exercise 6.8
+
+问：
+
+答：
+
+我们可以很容易的根据策略$\pi$来获得行为的预测值$q_{\pi}$，并根据获得$q_{\pi}$使$\pi$向贪婪方向前进。Sarsa的算法流程如下：
+
+![1506754086196](images/1506754086196.png)
+
+Sarsa算法的收敛性与策略对$Q$的依赖有关。比如我们使用$\epsilon-greedy$或$\epsilon-soft$策略。只要行为状态对能够被访问无数次且策略能够在有限步内收敛到贪婪，Sarsa就一定能够得到最优策略。
+
+### Windy Gridworld
+
+我们现在对以前的格子世界进行改进：假设在格子的中部有一阵从下向上吹的风，风的强度可以理解为agent被迫向上移动的格子数，风的强度在表格的最下面已标明。每个状态可选的行为有：上、下、左、右。 我们可以把这个任务看作是无折扣的周期任务。除了结束状态、返回值设为-1。
+
+![1506756017334](images/1506756017334.png)
+
+上图是$\epsilon = 0.5, \alpha = 0.5$、初始$Q{(s,a)} = 0$的$\epsilon-greedy$ Sarsa算法的结果。从图中可以看到，即使已训练8000轮，当前策略依然离最优策略有很大的差距。蒙特卡洛算法不能够解决这个任务，因为我们并不能保证对于任意策略可能生成的任何片段都有结束状态。
+
+### Exercise 6.9: Windy Gridworld with King's Moves
+
+问：
+
+答：
+
+### Exercise 6.10: Stochastic Wind
+
+问：
+
+答：
+
+## Q-learning: off-policy TD Control
+
+TD算法的异策略更新规则可以写为：
+
+$$Q_{(S_t,A_t)} \gets Q_{(S_t,A_t)} + \alpha [R_{t+1} + \gamma \max_{a} Q_{(S_{t+1},a)} - Q_{(S_t,A_t)} \tag{6.8}]$$
+
+在这个规则下，行为函数$Q$直接逼近最优行为函数$q*$，而不管它遵循的策略是什么。Q-learning算法如下：
+
+![1506757340152](images/1506757340152.png)
+
+Q-learning的状态转换图如下：
+
+![1506757394703](images/1506757394703.png)
+
+### Cliff Walking
+
+这个例子突出强调同策略和异策略的不同。如果到达被标记为悬崖的区域，奖励为-100，且立即回到开始的地方；除此之外，任何奖励都是-1。下图是它的示意图：
+
+![1506757869969](images/1506757869969.png)
+
+其中$\alpha = 0.1$。Q-learning一开始就遵循最优策略——沿着悬崖的边缘向右走。但由于非贪婪选择的原因，它偶尔会掉下悬崖。Sarsa选择了一条安全的但是更长的路径。虽然Q-learning更接近最优策略，但它的表现要差于Sarsa。当然，如果$\epsilon$逐渐减少，两种方法都会收敛到最优。
+
+### Exercise 6.11
+
+问：
+
+答：
+
+## Expected Sarsa
+
+类似Q-learning，我们把最大值改为期望值，如下：
+
+$$\begin{align}  Q(S_t,A_t) &\gets Q(S_t,A_t) + \alpha [R_{t+1} + \gamma E[Q(S_{t+1} ,A_{t+1} | S_{t+1})] - Q(S_t,A_t) ] \\ &\gets Q(S_t,A_t) + \alpha [R_{t+1} + \gamma \sum_{a} \pi ( a| S_{t+1}) Q(S_{t+1} ,a) - Q(S_t,A_t)] \tag{6.9}                 \end{align}$$
+
+这个算法称为期望Sarsa(expected Sarsa)。它的状态转换图如下：
+
+![1506761645985](images/1506761645985.png)
+
+与Sarsa相比，期望Sarsa消除了随机变量导致的误差。与此同时，期望Sarsa也保留了Sarsa对Q-learning的优势。期望Sarsa可以设$\alpha = 1$而不用担心性能的下降。Sarsa在一个长流程的任务中就必须设定一个较小的$\alpha$，且短期表现不佳。
+
+如果我们使用一个不同的策略来生成片段，期望Sarsa就变成异策略算法。比如$\pi$是一个贪婪策略，它尽可能的去探索。那么此时期望Sarsa就类似于Q-learning，它包含了Q-learning并改善了Sarsa。
+
+## Maximization Bias and Double Learning
+
+
+
+
+
 
 
 
