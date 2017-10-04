@@ -98,7 +98,7 @@ while ep < episodeLimit:
 
 plt.figure()
 plt.xlabel('Time steps')
-plt.ylabel('Episodes with four action')
+plt.ylabel('Episodes with four actions')
 plt.plot(episodes)
 plt.grid()
 plt.show()
