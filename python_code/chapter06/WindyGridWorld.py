@@ -91,13 +91,16 @@ ep = 0
 episodes = []
 while ep < episodeLimit:
     time = oneEpisode()
-    episodes.extend([ep] * time)
+    if time > 150:
+        time = 150
+    episodes.append(time)
     ep += 1
 
 plt.figure()
-plt.plot(episodes)
 plt.xlabel('Time steps')
-plt.ylabel('Episodes')
+plt.ylabel('Episodes with four action')
+plt.plot(episodes)
+plt.grid()
 plt.show()
 
 # display the optimal policy
