@@ -41,14 +41,6 @@ $\delta_t$是$t$时刻的误差。
 
 $$\begin{align} G_t - V(S_t) & = R_{t+1} + \gamma G_{t+1} - V(S_t) + \gamma V(S_{t+1}) - \gamma V(S_{t+1}) \tag{from (3.3)}\\ & = \delta_t + \gamma (G_{t+1} - V(S_{t+1}) ) \\ & = \delta_t + \gamma \delta_{t+1} + \dots + \gamma^{T-t-1} \delta_{T-1} + \gamma^{T-t}(0 - 0) \\ & = \sum_{k = t}^{T-1}\gamma^{k-t}\delta_{k} \tag{(6.6)} \end{align}$$
 
-### Exercise 6.1
-
-问：如果$V$在周期中变化，式6.6将是一个近似值。双方之间有什么区别？设$V_t$表示在t时刻的状态值数组，写出蒙特卡洛算法误差的表示式。
-
-答：
-
-pass
-
 ### Driving Home
 
 每天你需要估计一下到家需要多长时间。你注意到，花费的时间与天气、周几等因素可能是相关的。某一天是周五，你在下午六点离开办公室，此时你估计可能要三十分钟到家。你到停车场时已经6：05了，这时你注意到可能要下雨了，你估计回家要花费三十五分钟（总计四十分钟）。接下来，你花了十五分钟在高速路上。路况很好，此时你估计你还要十五分钟才能到家。不幸的是，你被堵在一辆行驶很慢的大货车的后面。一直到6：40，你才逃出来。后来你又花了三分钟到家。状态、时间、预测的序列如下表所示：
@@ -84,18 +76,6 @@ TD算法一定能够收敛到正确值吗？是的，完全可以。对于固定
 
 既然TD算法和蒙特卡洛算法都能够收敛到正确值，那么哪种方法收敛的更快？哪种方法更能适应较少的数据？现在还没有一个准确的答案。
 
-### Exercise 6.2
-
-问：
-
-答：
-
-### Exercise 6.3
-
-问：
-
-答：
-
 ### Random Walk
 
 现在，我们来比较一下TD(0)算法和蒙特卡洛算法在一个较小序列的马尔科夫决策过程的预测效果。开始状态是C（这个流程的中心），可选行为是等概率的向左或向右。流程将在agent到达最左边或最右边结束。如果结束时agent在最右边，奖励为+1，其它为0。从A到E的真实值是1/6，2/6，3/6，4/6，5/6。下图是流程示意图及实验结果分析。
@@ -104,23 +84,35 @@ TD算法一定能够收敛到正确值吗？是的，完全可以。对于固定
 
 左图说明TD(0)学习的次数越多，估计值就越接近真实值。基于对多个片段序列的平均，右图表示TD(0)算法和蒙特卡洛算法在预测方面的平均误差。实验中，变量是学习率$\alpha$。程序初始化时，把所有状态的价值设为0.5。从右图我们可以发现，TD算法始终优于蒙特卡洛算法。
 
-### Exercise 6.4
-
-问：
-
-答：
-
 ### Exercise 6.5
 
-问：
+问：在图6.2的右图，TD算法的RMS错误率先降再升，这是为什么？为什么$\alpha$比较大时，这样的变化特别明显？你认为这样的情况总是发生还是这只是价值函数的初始化？
 
-答：
+答：我认为它总是会发生的。整个计算其实就是一个逐渐收敛的过程。举个例子，假设在八点整发车，我七点半出发。假设我每隔15分钟看一次时间，那么我很可能错过；假设我一分钟看一次时间，那么我就不容易错过。收敛的最终结果就是得到一个收敛值，$\alpha$越大，它的变化量越大，越不容易接近收敛值；$\alpha$越小，它的变化量越小，越容易接近收敛值。
 
 ### Exercise 6.6
 
-问：
+问：用两种不同的方法来计算状态的值。并说明实际使用的是哪种方法，为什么？
 
 答：
+
+第一种方法：
+
+$V(A) = 0.5 * V(T) + 0.5 * V(B)$
+
+$V(B) = 0.5 * V(A) + 0.5 * V(C)$
+
+$V(C) = 0.5 * V(B) + 0.5 * V(D)$
+
+$V(D) = 0.5 * V(C) + 0.5 * V(E)$
+
+$V(E) = 0.5 * V(D) + 0.5 * (1 + V(T))$
+
+第二种方法：
+
+如例所述，不断生成样本，根据样本来计算。
+
+实际中使用第二种方法。如果是一个更复杂的情况，如果采用第一种方法，计算量太大，而且我们无法得到实际的概率分布。
 
 ## Optimality of TD(0)
 
@@ -160,12 +152,6 @@ $V(A)$和$V(B)$的值最有可能是多少？在8个片段中 ，有6个片段�
 
 最后，即使确定等价估计可能是最优解，但是它几乎不可能直接被使用。如果有N个状态，进行极大似然估计的计算我们可能需要$N^2$的内存，$N^3$个计算步骤。与之相对的，TD算法能够在使用不超过$N$的内存下，使用训练集进行重复迭代，这个效果是非常惊人的。对于状态空间较大的任务，TD算法可能是得到近似确定等价解的唯一方法。
 
-### Exercise 6.7
-
-问：
-
-答：
-
 ## Sarsa: On-policy TD Control
 
 与以前一样，TD(0)算法的控制也遵循一般策略迭代(generalized policy iteration)。现在我们来讨论同策略的TD控制过程。
@@ -184,9 +170,11 @@ $$Q_{t}(S_t, A_t) \gets Q_{t}(S_t, A_t) + \alpha [R_{t +1} + \gamma Q_{t}(S_{t+1
 
 ### Exercise 6.8
 
-问：
+问：将行为值函数改写为式6.6的形式
 
 答：
+
+$$ \begin{align} G(t) - Q(S_t,A_t) &= R_{t+1} + \gamma G_{t+1} - Q(S_t,A_t) + \gamma Q(S_{t+1},A_{t+1}) -  \gamma Q(S_{t+1},A_{t+1}) \\ & = R_{t+1}  + \gamma Q(S_{t+1},A_{t+1})   - Q(S_t,A_t) + \gamma (G_{t+1} -  Q(S_{t+1},A_{t+1})) \\ & = \delta_t + \dots + \gamma^{T-t} (0 - 0) \\ & = \sum_{k=t}^{T-1}\gamma^{k-t}\delta_k \end{align}$$
 
 我们可以很容易的根据策略$\pi$来获得行为的预测值$q_{\pi}$，并根据获得$q_{\pi}$使$\pi$向贪婪方向前进。Sarsa的算法流程如下：
 
@@ -204,15 +192,37 @@ Sarsa算法的收敛性与策略对$Q$的依赖有关。比如我们使用$\epsi
 
 ### Exercise 6.9: Windy Gridworld with King's Moves
 
-问：
+问：加上沿对角线的走法，结果会怎样？再加上保持不动会怎样？
 
 答：
 
-### Exercise 6.10: Stochastic Wind
+我把步数大于150的都强制设为150。
 
-问：
+四种走法：
 
-答：
+![episodes_with_four_actions](images/episodes_with_four_actions.png)
+
+![episodes_with_four_actions](images/episodes_with_four_actions.jpg)
+
+八种走法：
+
+![episodes_with_eight_actions](images/episodes_with_eight_actions.png)
+
+![episodes_with_eight_actions](images/episodes_with_eight_actions.jpg)
+
+九种走法：
+
+![episodes_with_nine_actions](images/episodes_with_nine_actions.png)
+
+![episodes_with_nine_actions](images/episodes_with_nine_actions.jpg)
+
+可选择的行为越多，达到目标所需要的步数越少。
+
+[四种行为的代码](https://github.com/Q11111happy/reinforcement_learning_an_introduction/blob/master/python_code/chapter06/WindyGridWorld.py)
+
+[八种行为的代码](https://github.com/Q11111happy/reinforcement_learning_an_introduction/blob/master/python_code/chapter06/WindyGridWorldwithKingMove.py)
+
+[九种行为的代码](https://github.com/Q11111happy/reinforcement_learning_an_introduction/blob/master/python_code/chapter06/WindyGridWorldwithNineActions.py)
 
 ## Q-learning: off-policy TD Control
 
@@ -238,9 +248,11 @@ Q-learning的状态转换图如下：
 
 ### Exercise 6.11
 
-问：
+问：为什么Q-learning被看作是异策略的学习
 
-答：
+答：因为样本是按照固定策略$\epsilon-greedy$产生的，Q-learning则总是贪婪的。
+
+此外当前状态S(t)只能决定下一个状态是S(t+1)，而不能决定A(t+1)。但Sarsa可以。
 
 ## Expected Sarsa
 
@@ -284,9 +296,11 @@ $$\begin{align} Q_1(S_t,A_t)&\gets Q_1(S_t,A_t) + \alpha [R_{t+1} \\ &+ \gamma Q
 
 ### Exercise 6.12
 
-问：
+问：Double Expected Sarsa在$\epsilon-greedy$策略下的更新公式是什么？
 
 答：
+
+$$\begin{align} Q_1(S_t,A_t)&\gets Q_1(S_t,A_t) + \alpha [R_{t+1} \\ &+ \gamma \sum \pi (a|S_{t+1})Q_2(S_{t+1},a) - Q_1(S_t,A_t) ] \tag{6.10}\end{align}$$
 
 ## Games, Afterstates, and Other Special Cases
 
@@ -297,9 +311,3 @@ $$\begin{align} Q_1(S_t,A_t)&\gets Q_1(S_t,A_t) + \alpha [R_{t+1} \\ &+ \gamma Q
 ![1506773299494](images/1506773299494.png)
 
 一般的行为值函数要分开计算，但后续价值函数只需要计算一次。
-
-### Exercise 6.13
-
-问：
-
-答：
