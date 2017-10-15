@@ -62,6 +62,32 @@ n取多大最好？下图显示了在更大规模随机游走实验中，n的取
 
 如何将n-step TD预测算法应用到控制算法中？我们首先介绍n-step Sarsa。
 
+我们依然使用行为状态对和$\epsilon-greedy$算法对Sarsa算法进行控制。如上所示，类似的，更新公式可以写成：
+
+$$G_{t:t+n} \approx R_{t+1} + \gamma R_{t+2} + \dots + \gamma ^n Q_{t+n-1}(S_{t+n},A_{t+n}), \ \ \ \ n \ge1, \ 0 \le t \le T-n \tag{7.4}$$
+
+如果$t+n \ge T$，那么$G_{t:t+n} \approx G_t$。Sarsa算法可以写成：
+
+$$Q_{t+n} (S_t,A_t) \approx Q_{t+n-1}(S_t,A_t) + \alpha [G_{t:t+n} - Q_{t+n-1} (S_t,A_t], \ \ \ \ {0} {\le} {t} {<} {T}  \tag{7.5}$$
+
+上式就是整个n-step Sarsa算法。
+
+n-step Sarsa算法的表示图可以为：
+
+![1508054085730](images/1508054085730.png)
+
+n-step Sarsa的伪代码如下图所示。
+
+![1508054175434](images/1508054175434.png)
+
+期望Sarsa如何计算？期望Sarsa与n-step Sarsa一致，除了最后一项不是确定的行为状态对，而是行为状态对的期望。在$n \ge 1 \ and \ 0 \le t \le T-n$下，它的更新公式如下：
+
+$$G_{t:t+n} \approx R_{t+1} + \dots + \gamma ^{n-1} R_{t+n} + \gamma ^n \sum_a \pi (a|S_{t+n}) Q_{t+n-1}(S_{t+n},a) \tag{7.6}$$
+
+![1508056349206](images/1508056349206.png)
+
+### n-step Off-policy Learning by Importance Sampling
+
 
 
 
