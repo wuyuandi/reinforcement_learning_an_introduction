@@ -128,6 +128,64 @@ $$G_{t:h} = \rho_t(R_{t+1} + \gamma G_{t+1:h}) + (1 - \rho_t)V(S_t), \ \ \ \ t <
 
 在同策略的情况下，$\rho_t$总是1。
 
+### Exercise 7.4
+
+问：上述过程的伪代码
+
+答：
+
+Input: an arbitrary behavior policy b such that b(a|s) > 0, $ \forall s \in S$,$a \in A$
+
+Initialize $Q(s,a)$ arbitrarily, $\forall s \in S$,$a \in A$
+
+Initialize $\pi$ to be $\epsilon-greedy$ with respect to Q, or as a fixed given policy
+
+Parameters: step size $\alpha \in (0,1]$, small $\epsilon > 0$, a positive integer n
+
+All stroe and access operations (for $S_t$, $A_t$, and $R_t$) can take their index mod n
+
+Repeat(for each episode):
+
+​	Initialzie and store $S_0 \neq$ terminal
+
+​	Select and store an action $A_0 \sim b(\cdot|S_0)$
+
+​	T $\gets$ $\infty$
+
+​	For t = 0,1,2,...:
+
+​		If t < T, then:
+
+​			Take action $A_t$
+
+​			Observe and store the next reward as $R_{t+1}$ and the next state as $S_{t+1}$
+
+​			If $S_{t+1}$ is terminal, then:
+
+​				T $\gets$ t + 1
+
+​			else:
+
+​				Select and store an action $A_{t+1} \sim b(\cdot|S_{t+1})$
+
+​		$\tau \gets t - n + 1$ ($\tau$ is the time whose estimate is being updated)
+
+​		if $\tau \ge 0$:
+
+​			$\rho \gets \prod^{min(\tau + n -1, T-1)}_{i = \tau +1} \frac{\pi(A_i|S_i)} {b(A_i|S_i)}$
+
+​			$G \gets \sum^{min(\rho+n,T)}_{i = \tau + 1} \gamma^{i - \tau-1}R_{i}$
+
+​			If $tau + n < T$,then:
+
+​				$G \gets \rho_t(R_{t+1} + \gamma G_{t+1:h}) + (1 - \rho) V(S_t)$
+
+​			$Q_(S_{\tau}, A_{\tau}) \gets Q(S_{\tau},A_{\tau}) + \alpha \rho [G-Q(S_{\tau}, A_{\tau})]$
+
+​			If $\pi$ is being learned, then ensure that $\pi{\cdot| S_{\tau}}$ is $\epsilon-greedy$ wrt Q
+
+​	Until $\tau = T - 1$
+
 对于行为价值，多步返回值的异策略的定义与期望Sarsa一致。但不同之处在于，第一个行为并没有在重要采样中起到作用。我们只关心从行为中学习到的值，不关心甚至不考虑该行为是否在目标策略中出现。对于现在的奖励和行为，我们设权重为1，后面的行为才考虑重要采样率。多步返回的异策略迭代定义可以写成：
 
 $$G_{t:h} \approx R_{t+1} + \gamma (\rho_{t+1}G_{t+1:h} + (1-\rho_{t-1}) \bar{Q}_{t+1}) \tag{7.11}$$
