@@ -192,3 +192,11 @@ $$G_{t:h} \approx R_{t+1} + \gamma (\rho_{t+1}G_{t+1:h} + (1-\rho_{t-1}) \bar{Q}
 
 我们在本节、以前的章节和第五章所采用的重要性采样都可以应用到异策略学习中，代价就是增大更新的方差。增大的方差需要我们采用一个小的学习率来减缓学习速度。这也是异策略训练比同策略学习慢的原因。毕竟，我们得到的数据与我们尝试学习到的策略的关联很少。
 
+### Exercise 7.6
+
+$$\delta_t = R_{t+1} + {\gamma} {V(S_{t+1})} - V(S_t) $$
+
+$$\begin{align} G_{t:h} &= \rho_t(R_{t+1} + \gamma G_{t+1:h}) + (1- \rho_t) V(S_t) \\   &= \rho_t R_{t+1} + \gamma \rho_{t} G_{t+1:h} + V(S_t) - \rho_t V(S_t) + \gamma \rho_t V(S_{t+1}) - \gamma \rho_{t} V(S_{t+1}) \\ &= \rho_t \left (R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right)  + \gamma \rho_t \left(G_{t+1:h} - V(S_{t+1}) \right) + V(S_t) \\ &= \rho_t \delta_t + \gamma \rho_t \left (G_{t+1:h} - V(S_{t+1}) \right) + V(S_t) \end{align}$$
+
+$$ \begin{align} G_{t:h} - V(S_t) &= \rho_t R_{t+1} + \gamma \rho_t G_{t+1:h} + V(S_t) - \rho_t V(S_t) - V(S_t) \\ &= \rho_t R_{t+1} + \gamma \rho_t V(S_{t+1}) - \rho_{t} V(S_t)  + \gamma \rho_t G_{t+1:h} - \gamma \rho_t V(S_{t+1}) \\ &= \rho_t \left ( R_{t+1} + \gamma V(S_{t+1}) - V(S_t)      \right)   + \gamma \rho_t (G_{t+1:h} - V(S_{t+1})) \\ &= \rho_t\delta_t + \gamma \rho_t (G_{t+1:h} - V(S_{t+1})) \\ &= \rho_{t} \delta_{t} + \gamma \rho_t \rho_{t+1}  \delta_{t+1} + \gamma ^2 \rho_t \rho_{t+1}  \rho_{t+2} \delta_{t+2} +  \dots + \gamma ^ {h-1-t} \left(\prod_{i = t}^{h-1} \rho_{i} \right) \delta_{h-1} + 0)  \\ &= \sum_{i=t}^{h-1} \left( \gamma ^{i - t} \left(\prod_{j=t}^{i} \rho_{j} \right) \delta_{i} \right)\end{align}$$
+
